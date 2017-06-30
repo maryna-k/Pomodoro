@@ -18,7 +18,7 @@ import butterknife.ButterKnife;
 
 public class PomodoroAdapter extends RecyclerView.Adapter<PomodoroAdapter.Holder> {
 
-    public static String LOG_TAG = PomodoroAdapter.class.getSimpleName();
+    private final String LOG_TAG = PomodoroAdapter.class.getSimpleName();
 
     private List<Pomodoro> pomodoroList;
 

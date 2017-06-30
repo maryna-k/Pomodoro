@@ -5,9 +5,12 @@ import com.example.android.pomodoro.model.Pomodoro;
 
 import java.util.List;
 
+import io.reactivex.Completable;
+import io.reactivex.Single;
+
 public interface DataRepository {
 
-    List<Pomodoro> loadAllPomodoros();
-    void addPomodoro(Pomodoro pomodoro);
+    Single<List<Pomodoro>> loadAllPomodoros();
+    Completable addPomodoro(Pomodoro pomodoro);
     void removePomodoro(int id);
 }

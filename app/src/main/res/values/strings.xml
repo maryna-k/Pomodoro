@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Pomodoro</string>
     <string name="confirm_add_button">Add</string>
+    <string name="no_pomodoros_message">You have no pomodoros</string>
 </resources>

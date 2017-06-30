@@ -10,6 +10,7 @@ public interface AddPomodoroContract {
     }
 
     interface View {
-        void showPomodoroList();
+        void returnToPomodoroList();
+        void showSavingErrorMessage();
     }
 }

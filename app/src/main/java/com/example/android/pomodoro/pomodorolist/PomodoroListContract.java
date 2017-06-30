@@ -7,11 +7,14 @@ import java.util.List;
 
 public interface PomodoroListContract {
 
-    interface Presenter {
+    interface ListPresenter {
         void loadPomodoros();
     }
 
-    interface View {
-        void showPomodoros(List<Pomodoro> pomodoroList);
+    interface ListView {
+        void showPomodoroList(List<Pomodoro> pomodoroList);
+        void showNoPomodorosMessage();
+        void showLoadingErrorMessage();
+        void showAddPomodoro();
     }
 }

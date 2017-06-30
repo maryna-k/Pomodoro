@@ -6,7 +6,9 @@ import android.support.v7.app.AppCompatActivity;
 import com.example.android.pomodoro.R;
 
 
-public class AddPomodoroActivity extends AppCompatActivity{
+public class AddPomodoroActivity extends AppCompatActivity {
+
+    private final String LOG_TAG = this.getClass().getSimpleName();
 
     @Override
     public void onCreate(Bundle savedInstanceState){

@@ -10,25 +10,32 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.Toast;
 
-import com.example.android.pomodoro.addpomodoro.AddPomodoroActivity;
-import com.example.android.pomodoro.model.data.LocalDataRepository;
-import com.example.android.pomodoro.model.Pomodoro;
 import com.example.android.pomodoro.R;
+import com.example.android.pomodoro.addpomodoro.AddPomodoroActivity;
+import com.example.android.pomodoro.model.Pomodoro;
+import com.example.android.pomodoro.model.data.LocalDataRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 
-/**
- * A simple {@link Fragment} subclass.
- */
-public class PomodoroListFragment extends Fragment implements PomodoroListContract.View{
+
+
+public class PomodoroListFragment extends Fragment implements PomodoroListContract.ListView {
+
+    private final String LOG_TAG = this.getClass().getSimpleName();
 
     @BindView(R.id.recyclerview)
     RecyclerView recyclerView;
+
+    @BindView(R.id.no_pomodoros_view)
+    TextView noPomodorosView;
 
     @BindView(R.id.add_fab_button)
     FloatingActionButton addButton;
@@ -38,6 +45,7 @@ public class PomodoroListFragment extends Fragment implements PomodoroListContra
 
 
     public PomodoroListFragment() {}
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -56,23 +64,44 @@ public class PomodoroListFragment extends Fragment implements PomodoroListContra
         recyclerView.setAdapter(adapter);
 
         presenter = new PomodoroListPresenter(this,
-                LocalDataRepository.getInstance(getActivity().getApplicationContext()));
-        presenter.loadPomodoros();
+                LocalDataRepository.getInstance(getActivity().getApplicationContext()), AndroidSchedulers.mainThread());
 
-        addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showAddPomodoro();
-            }
-        });
+        addButton.setOnClickListener(v -> showAddPomodoro());
+
         return rootView;
     }
 
     @Override
-    public void showPomodoros(List<Pomodoro> pomodoroList) {
-        adapter.replaceData(pomodoroList);
+    public void onResume(){
+        super.onResume();
+        presenter.loadPomodoros();
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        presenter.unsubscribe();
+    }
+
+    @Override
+    public void showPomodoroList(List<Pomodoro> pomodoroList) {
+        adapter.replaceData(pomodoroList);
+        noPomodorosView.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void showNoPomodorosMessage(){
+        noPomodorosView.setVisibility(View.VISIBLE);
+        recyclerView.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void showLoadingErrorMessage(){
+        Toast.makeText(getContext(), "Pomodoros could not being loaded...", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
     public void showAddPomodoro(){
         Intent intent = new Intent(getActivity(), AddPomodoroActivity.class);
         startActivity(intent);

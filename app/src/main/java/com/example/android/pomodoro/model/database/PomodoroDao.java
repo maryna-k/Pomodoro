@@ -16,7 +16,7 @@ import java.util.List;
 public interface PomodoroDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertPomodoro(Pomodoro pomodoro);
+    long insertPomodoro(Pomodoro pomodoro);
 
     @Query("SELECT * FROM " + Config.POMODORO_TABLE_NAME)
     List<Pomodoro> getAll();
