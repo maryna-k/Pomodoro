@@ -15,15 +15,19 @@ import android.widget.Toast;
 
 import com.example.android.pomodoro.R;
 import com.example.android.pomodoro.addpomodoro.AddPomodoroActivity;
+import com.example.android.pomodoro.dagger.AppComponent;
+import com.example.android.pomodoro.dagger.DaggerListPresenterComponent;
+import com.example.android.pomodoro.dagger.ListPresenterModule;
 import com.example.android.pomodoro.model.Pomodoro;
-import com.example.android.pomodoro.model.data.LocalDataRepository;
+import com.example.android.pomodoro.util.PomodoroApplication;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 
 
 
@@ -40,8 +44,10 @@ public class PomodoroListFragment extends Fragment implements PomodoroListContra
     @BindView(R.id.add_fab_button)
     FloatingActionButton addButton;
 
+    @Inject
+    PomodoroListPresenter presenter;
+
     private PomodoroAdapter adapter;
-    private PomodoroListPresenter presenter;
 
 
     public PomodoroListFragment() {}
@@ -51,6 +57,14 @@ public class PomodoroListFragment extends Fragment implements PomodoroListContra
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         adapter = new PomodoroAdapter(new ArrayList<Pomodoro>(0));
+
+        //inject presenter
+        AppComponent appComponent = ((PomodoroApplication) getActivity().getApplication()).getAppComponent();
+        DaggerListPresenterComponent.builder()
+                .appComponent(appComponent)
+                .listPresenterModule(new ListPresenterModule(this))
+                .build()
+                .inject(this);
     }
 
     @Override
@@ -62,9 +76,6 @@ public class PomodoroListFragment extends Fragment implements PomodoroListContra
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
-
-        presenter = new PomodoroListPresenter(this,
-                LocalDataRepository.getInstance(getActivity().getApplicationContext()), AndroidSchedulers.mainThread());
 
         addButton.setOnClickListener(v -> showAddPomodoro());
 
@@ -98,7 +109,7 @@ public class PomodoroListFragment extends Fragment implements PomodoroListContra
 
     @Override
     public void showLoadingErrorMessage(){
-        Toast.makeText(getContext(), "Pomodoros could not being loaded...", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "Pomodoros could not be loaded...", Toast.LENGTH_SHORT).show();
     }
 
     @Override
