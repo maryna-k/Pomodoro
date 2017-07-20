@@ -10,8 +10,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.android.pomodoro.R;
+import com.example.android.pomodoro.dagger.AddPresenterModule;
+import com.example.android.pomodoro.dagger.AppComponent;
+import com.example.android.pomodoro.dagger.DaggerAddPresenterComponent;
 import com.example.android.pomodoro.model.Pomodoro;
-import com.example.android.pomodoro.model.data.LocalDataRepository;
+import com.example.android.pomodoro.util.PomodoroApplication;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -27,11 +32,9 @@ public class AddPomodoroFragment extends Fragment implements AddPomodoroContract
     @BindView(R.id.add_pomodoro_text_field)
     TextView addPomodoroName;
 
-    private AddPomodoroPresenter presenter;
+    @Inject AddPomodoroPresenter presenter;
 
-    public AddPomodoroFragment() {
-        // Required empty public constructor
-    }
+    public AddPomodoroFragment() {}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -39,8 +42,13 @@ public class AddPomodoroFragment extends Fragment implements AddPomodoroContract
         View rootView = inflater.inflate(R.layout.fragment_add_pomodoro, container, false);
         ButterKnife.bind(this, rootView);
 
-        presenter = new AddPomodoroPresenter(this,
-                LocalDataRepository.getInstance(getActivity().getApplicationContext()));
+        //inject presenter
+        AppComponent appComponent = ((PomodoroApplication) getActivity().getApplication()).getAppComponent();
+        DaggerAddPresenterComponent.builder()
+                .appComponent(appComponent)
+                .addPresenterModule(new AddPresenterModule(this))
+                .build()
+                .inject(this);
 
         confirmNewPomodoroButton.setOnClickListener(v -> {
             String name = addPomodoroName.getText().toString();

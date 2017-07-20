@@ -20,6 +20,8 @@ public class PomodoroListPresenter implements PomodoroListContract.ListPresenter
     private Scheduler mainScheduler;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
+    private final String LOG_TAG = PomodoroListPresenter.class.getSimpleName();
+
     public PomodoroListPresenter(ListView view, DataRepository repository, Scheduler mainScheduler) {
         this.view = view;
         this.repository = repository;
